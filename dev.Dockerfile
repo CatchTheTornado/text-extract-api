@@ -1,23 +1,34 @@
 FROM python:3.10-slim
 
-RUN mkdir -p /app/storage && ln -s /storage /app/storage # backward compability for (https://github.com/CatchTheTornado/text-extract-api/issues/85)
+ENV DEBIAN_FRONTEND=noninteractive
 
-RUN echo 'Acquire::http::Pipeline-Depth 0;\nAcquire::http::No-Cache true;\nAcquire::BrokenProxy true;\n' > /etc/apt/apt.conf.d/99fixbadproxy
-
-RUN apt-get clean && rm -rf /var/lib/apt/lists/* \
-    && apt-get update --fix-missing \
-    && apt-get install -y \
-        libglib2.0-0 \
-        libglib2.0-dev \
-        libgl1-mesa-glx \
-        poppler-utils \
-        libmagic1 \
-        libmagic-dev \
-        libpoppler-cpp-dev \
+# Systémové závislosti (přidány chybějící knihovny)
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    gcc \
+    libmagic-dev \
+    libglib2.0-dev \
+    poppler-utils \
+    ghostscript \
+    ffmpeg \
+    pkg-config \
+    automake \
+    autoconf \
+    libtool \
+    git \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-EXPOSE 8000
+COPY . .
 
-ENTRYPOINT ["/app/scripts/entrypoint.sh"]
+# Základní build nástroje (pro PEP 517 – pyproject.toml)
+RUN pip install --upgrade pip setuptools wheel build
+
+# Instalace projektu
+RUN pip install .
+
+RUN chmod +x run.sh
+
+CMD ["bash", "run.sh"]
