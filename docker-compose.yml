@@ -36,7 +36,7 @@ services:
       - CELERY_BROKER_URL=${CELERY_BROKER_URL-redis://redis:6379/0}
       - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND-redis://redis:6379/0}
       - STORAGE_PROFILE_PATH=${STORAGE_PROFILE_PATH-/app/storage_profiles}  # Add the storage profile path
-      - LIST_FILES_URL=${LIST_FILES_URL-http://localhost:8000/storage/list}      
+      - LIST_FILES_URL=${LIST_FILES_URL-http://localhost:8000/storage/list}
       - LOAD_FILE_URL=${LOAD_FILE_URL-http://localhost:8000/storage/load}
       - DELETE_FILE_URL=${DELETE_FILE_URL-http://localhost:8000/storage/delete}
     depends_on:
@@ -61,4 +61,3 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-

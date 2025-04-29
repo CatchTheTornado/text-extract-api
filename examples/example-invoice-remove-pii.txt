@@ -1,5 +1,5 @@
 Below is th text from PDF document after OCR. Fix the text and spelling issues.
-Remove Any personal information (like name, first name, last name, address, street, phone number email) replacing it with "ANONYMIZED". 
+Remove Any personal information (like name, first name, last name, address, street, phone number email) replacing it with "ANONYMIZED".
 
 Convert to JSON using the following schema:
 
@@ -86,4 +86,3 @@ Convert to JSON using the following schema:
 
 
 Input text:
-

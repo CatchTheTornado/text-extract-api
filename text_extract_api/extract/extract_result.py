@@ -3,16 +3,16 @@ from typing import Callable, Any
 """
 IMPORTANT INFORMATION ABOUT THIS CLASS:
 
-This is not the final version of the object, namespace, or intended use. 
+This is not the final version of the object, namespace, or intended use.
 
-For this reason, I am not creating an interface, etc. Add code here as soon as possible 
-along with further integrations, and once we have gained sufficient experience, we will 
+For this reason, I am not creating an interface, etc. Add code here as soon as possible
+along with further integrations, and once we have gained sufficient experience, we will
 undertake a refactor.
 
-Currently, the object's purpose is to replace the use of a primitive type, a string, for 
-extract returns. The limitation of this approach became evident when returning only the 
-resulting string caused us to lose valuable metadata about the document. Thanks to this 
-class, we retain DoclingDocument and foresee that other converters/OCRs may have similar 
+Currently, the object's purpose is to replace the use of a primitive type, a string, for
+extract returns. The limitation of this approach became evident when returning only the
+resulting string caused us to lose valuable metadata about the document. Thanks to this
+class, we retain DoclingDocument and foresee that other converters/OCRs may have similar
 metadata.
 """
 
