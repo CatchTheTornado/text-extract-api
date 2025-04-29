@@ -47,25 +47,17 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "pytest",
-    "black",
-    "isort",
-    "flake8",
+    "ruff",
 ]
 
-[tool.black]
+[tool.ruff]
 line-length = 88
-
-[tool.isort]
-profile = "black"
-multi_line_output = 3
+fix = true
+exclude = ["venv", "__pycache__", ".git", ".mypy_cache"]
 
 [tool.pytest]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
-
-[tool.flake8]
-max-line-length = 88
-exclude = ["venv", "__pycache__", ".git", ".mypy_cache"]
 
 [tool.setuptools.packages.find]
 where = ["text_extract_api"]
