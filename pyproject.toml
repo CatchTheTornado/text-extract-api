@@ -48,6 +48,7 @@ dependencies = [
 dev = [
     "pytest",
     "ruff",
+    "pre-commit",
 ]
 
 [tool.ruff]
