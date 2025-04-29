@@ -20,8 +20,12 @@ class FileFormat:
 
     # Construction
 
-    def __init__(self, binary_file_content: bytes, filename: Optional[str] = None,
-                 mime_type: Optional[str] = None) -> None:
+    def __init__(
+        self,
+        binary_file_content: bytes,
+        filename: Optional[str] = None,
+        mime_type: Optional[str] = None,
+    ) -> None:
         """
         Attributes:
             binary_file_content (bytes): The binary content of the file.
@@ -40,19 +44,27 @@ class FileFormat:
                 is provided or defaulted to.
         """
         if not binary_file_content:
-            raise ValueError(f"{self.__class__.__name__} missing content file - corrupted base64 or binary data.")
+            raise ValueError(
+                f"{self.__class__.__name__} missing content file - corrupted base64 or binary data."
+            )
 
         resolved_mime_type = mime_type or self.DEFAULT_MIME_TYPE
         if not resolved_mime_type:
-            raise ValueError(f"{self.__class__.__name__} requires a mime type to be provided or defaulted.")
+            raise ValueError(
+                f"{self.__class__.__name__} requires a mime type to be provided or defaulted."
+            )
 
         self.binary_file_content: bytes = binary_file_content
         self.filename: str = filename or self.DEFAULT_FILENAME
         self.mime_type: str = resolved_mime_type
 
     @classmethod
-    def from_base64(cls, base64_string: str, filename: Optional[str] = None, mime_type: Optional[str] = None) -> Type[
-        "FileFormat"]:
+    def from_base64(
+        cls,
+        base64_string: str,
+        filename: Optional[str] = None,
+        mime_type: Optional[str] = None,
+    ) -> Type["FileFormat"]:
         binary = base64.b64decode(base64_string)
         instance = cls.from_binary(binary, filename=filename, mime_type=mime_type)
         instance._base64_cache = base64_string
@@ -60,26 +72,27 @@ class FileFormat:
 
     @classmethod
     def from_binary(
-            cls,
-            binary: bytes,
-            filename: Optional[str] = None,
-            mime_type: Optional[str] = None
+        cls,
+        binary: bytes,
+        filename: Optional[str] = None,
+        mime_type: Optional[str] = None,
     ) -> Type["FileFormat"]:
         if mime_type == "application/octet-stream":
             mime_type = None
-        mime_type = mime_type or FileFormat._guess_mime_type(binary_data=binary, filename=filename)
-        from text_extract_api.files.file_formats.pdf import PdfFileFormat  # type: ignore
+        mime_type = mime_type or FileFormat._guess_mime_type(
+            binary_data=binary, filename=filename
+        )
         file_format_class = cls._get_file_format_class(mime_type)
-        return file_format_class(binary_file_content=binary, filename=filename, mime_type=mime_type)
+        return file_format_class(
+            binary_file_content=binary, filename=filename, mime_type=mime_type
+        )
 
     def __repr__(self) -> str:
         """
         Returns a string representation of the FileFormat instance.
         """
         size = len(self.binary_file_content)
-        return (
-            f"<FileFormat(filename='{self.filename}', mime_type='{self.mime_type}', size={size} bytes)>"
-        )
+        return f"<FileFormat(filename='{self.filename}', mime_type='{self.mime_type}', size={size} bytes)>"
 
     def to_dict(self, encode_base64: bool = False) -> FileFormatDict:
         """
@@ -104,7 +117,9 @@ class FileFormat:
     @property
     def base64_(self) -> str:
         if self._base64_cache is None:
-            self._base64_cache = base64.b64encode(self.binary_file_content).decode('utf-8')
+            self._base64_cache = base64.b64encode(self.binary_file_content).decode(
+                "utf-8"
+            )
         return self._base64_cache
 
     @property
@@ -136,7 +151,9 @@ class FileFormat:
 
         if self.is_pageable():
             if final_format.is_pageable():
-                raise ValueError("Target format and current format are both pageable. Cannot iterate.")
+                raise ValueError(
+                    "Target format and current format are both pageable. Cannot iterate."
+                )
             else:
                 yield self.convert_to(final_format)
         else:
@@ -164,12 +181,16 @@ class FileFormat:
 
         converters = self.convertible_to()
         if target_format not in converters:
-            raise ValueError(f"Cannot convert to {target_format}. Conversion not supported.")
+            raise ValueError(
+                f"Cannot convert to {target_format}. Conversion not supported."
+            )
 
         return list(converters[target_format](self))
 
     @staticmethod
-    def convertible_to() -> Dict[Type["FileFormat"], Callable[[Type["FileFormat"]], Iterator[Type["Converter"]]]]:
+    def convertible_to() -> Dict[
+        Type["FileFormat"], Callable[[Type["FileFormat"]], Iterator[Type["Converter"]]]  # NOQA: F821
+    ]:
         """
         Defines what formats this file type can be converted to.
         Returns a dictionary where keys are target formats and values are functions
@@ -177,13 +198,15 @@ class FileFormat:
 
         :return: A dictionary of convertible formats and their converters.
         """
-        return {}
+        return {}  # To check, Converter is not defined in this file
 
     @classmethod
     def default_iterator_file_format(cls) -> Type["FileFormat"]:
         if not cls.is_pageable():
             return cls
-        raise NotImplementedError("Pageable formats must implement default_iterator_file_format.")
+        raise NotImplementedError(
+            "Pageable formats must implement default_iterator_file_format."
+        )
 
     def unify(self) -> "FileFormat":
         """
@@ -199,19 +222,24 @@ class FileFormat:
         import text_extract_api.files.file_formats.pdf  # noqa - its not unused import @todo autodiscover
         import text_extract_api.files.file_formats.image  # noqa - its not unused import @todo autodiscover
         import text_extract_api.files.file_formats.docling  # noqa - its not unused import @todo autodiscover
+
         for subclass in FileFormat.__subclasses__():
             if mime_type in subclass.accepted_mime_types():
                 return subclass
         raise ValueError(f"No matching FileFormat class for mime type: {mime_type}")
 
     @staticmethod
-    def _guess_mime_type(binary_data: Optional[bytes] = None, filename: Optional[str] = None) -> str:
+    def _guess_mime_type(
+        binary_data: Optional[bytes] = None, filename: Optional[str] = None
+    ) -> str:
         mime = magic.Magic(mime=True)
         if binary_data:
             return mime.from_buffer(binary_data)
         if filename:
             return mime.from_file(filename)
-        raise ValueError("Either binary_data or filename must be provided to guess the MIME type.")
+        raise ValueError(
+            "Either binary_data or filename must be provided to guess the MIME type."
+        )
 
 
 class FileField:

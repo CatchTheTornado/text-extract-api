@@ -15,12 +15,10 @@ resulting string caused us to lose valuable metadata about the document. Thanks 
 class, we retain DoclingDocument and foresee that other converters/OCRs may have similar 
 metadata.
 """
+
+
 class ExtractResult:
-    def __init__(
-        self,
-        value: Any,
-        text_gatherer: Callable[[Any], str] = None
-    ):
+    def __init__(self, value: Any, text_gatherer: Callable[[Any], str] = None):
         """
         Initializes a UnifiedText instance.
 
@@ -48,16 +46,20 @@ class ExtractResult:
         """
 
         if text_gatherer is not None and not callable(text_gatherer):
-            raise ValueError("The `text_gatherer` provided to UnifiedText must be a callable.")
+            raise ValueError(
+                "The `text_gatherer` provided to UnifiedText must be a callable."
+            )
 
         if not isinstance(value, str) and not callable(text_gatherer):
-            raise ValueError("If `value` is not a string, `text_gatherer` must be provided.")
+            raise ValueError(
+                "If `value` is not a string, `text_gatherer` must be provided."
+            )
 
         self.value = value
         self.text_gatherer = text_gatherer or self._default_text_gatherer
 
     @staticmethod
-    def from_text(value: str) -> 'ExtractResult':
+    def from_text(value: str) -> "ExtractResult":
         return ExtractResult(value)
 
     @property
