@@ -14,17 +14,18 @@ class EasyOCRStrategy(Strategy):
     def name(cls) -> str:
         return "easyOCR"
 
-    def extract_text(self, file_format: FileFormat, language: str = 'en') -> ExtractResult:
+    def extract_text(
+        self, file_format: FileFormat, language: str = "en"
+    ) -> ExtractResult:
         """
         Extract text using EasyOCR after converting the input file to images
-        (if not already an ImageFileFormat). 
+        (if not already an ImageFileFormat).
         """
 
         # Ensure we can actually convert the input file to ImageFileFormat
-        if (
-            not isinstance(file_format, ImageFileFormat) 
-            and not file_format.can_convert_to(ImageFileFormat)
-        ):
+        if not isinstance(
+            file_format, ImageFileFormat
+        ) and not file_format.can_convert_to(ImageFileFormat):
             raise TypeError(
                 f"EasyOCR - format {file_format.mime_type} is not supported (yet?)"
             )
@@ -34,19 +35,21 @@ class EasyOCRStrategy(Strategy):
 
         # Initialize the EasyOCR Reader
         # Add or change languages to your needs, e.g., ['en', 'fr']
-        reader = easyocr.Reader(language.split(','))
+        reader = easyocr.Reader(language.split(","))
 
         # Process each image, extracting text
         all_extracted_text = []
         for image_format in images:
             # Convert the in-memory bytes to a PIL Image
             pil_image = Image.open(io.BytesIO(image_format.binary))
-            
+
             # Convert PIL image to numpy array for EasyOCR
             np_image = np.array(pil_image)
 
             # Perform OCR; with `detail=0`, we get just text, no bounding boxes
-            ocr_result = reader.readtext(np_image, detail=0) # TODO: addd bounding boxes support as described in #37
+            ocr_result = reader.readtext(
+                np_image, detail=0
+            )  # TODO: addd bounding boxes support as described in #37
 
             # Combine all lines into a single string for that image/page
             extracted_text = "\n".join(ocr_result)
@@ -54,6 +57,5 @@ class EasyOCRStrategy(Strategy):
 
         # Join text from all images/pages
         full_text = "\n\n".join(all_extracted_text)
-
 
         return ExtractResult.from_text(full_text)

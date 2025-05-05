@@ -15,13 +15,13 @@ The API is built with FastAPI and uses Celery for asynchronous task processing. 
 - **Distributed queue processing** using [Celery](https://docs.celeryq.dev/en/stable/getting-started/introduction.html)
 - **Caching** using Redis - the OCR results can be easily cached prior to LLM processing,
 - **Storage Strategies** switchable storage strategies (Google Drive, Local File System ...)
-- **CLI tool** for sending tasks and processing results 
+- **CLI tool** for sending tasks and processing results
 
 ## Screenshots
 
 Converting MRI report to Markdown + JSON.
 
-```bash 
+```bash
 python client/cli.py ocr_upload --file examples/example-mri.pdf --prompt_file examples/example-mri-2-json-prompt.txt
 ```
 
@@ -31,8 +31,8 @@ Before running the example see [getting started](#getting-started)
 
 Converting Invoice to JSON and remove PII
 
-```bash 
-python client/cli.py ocr_upload --file examples/example-invoice.pdf --prompt_file examples/example-invoice-remove-pii.txt 
+```bash
+python client/cli.py ocr_upload --file examples/example-invoice.pdf --prompt_file examples/example-invoice-remove-pii.txt
 ```
 
 Before running the example see [getting started](#getting-started)
@@ -52,19 +52,19 @@ To have it up and running please execute the following steps:
 
 
 > ### Setting Up Ollama on a Remote Host
-> 
+>
 > To connect to an external Ollama instance, set the environment variable: `OLLAMA_HOST=http://address:port`, e.g.:
 > ```bash
 > OLLAMA_HOST=http(s)://127.0.0.1:5000
 > ```
-> 
+>
 > If you want to disable the local Ollama model, use env `DISABLE_LOCAL_OLLAMA=1`, e.g.
 > ```bash
 > DISABLE_LOCAL_OLLAMA=1 make install
 > ```
-> **Note**: When local Ollama is disabled, ensure the required model is downloaded on the external instance.  
-> 
-> Currently, the `DISABLE_LOCAL_OLLAMA` variable cannot be used to disable Ollama in Docker. As a workaround, remove the `ollama` service from `docker-compose.yml` or `docker-compose.gpu.yml`.  
+> **Note**: When local Ollama is disabled, ensure the required model is downloaded on the external instance.
+>
+> Currently, the `DISABLE_LOCAL_OLLAMA` variable cannot be used to disable Ollama in Docker. As a workaround, remove the `ollama` service from `docker-compose.yml` or `docker-compose.gpu.yml`.
 >
 > Support for using the variable in Docker environments will be added in a future release.
 
@@ -83,11 +83,11 @@ cd text-extract-api
 Be default application create [virtual python env](https://docs.python.org/3/library/venv.html): `.venv`. You can disable this functionality on local setup by adding `DISABLE_VENV=1` before running script:
 
 ```bash
-DISABLE_VENV=1 make install 
+DISABLE_VENV=1 make install
 ```
 
 ```bash
-DISABLE_VENV=1 make run 
+DISABLE_VENV=1 make run
 ```
 
 ### Manual setup
@@ -172,7 +172,7 @@ Easy OCR is available on Apache based license. It's general purpose OCR with sup
 Enabled by default. Please do use the `strategy=easyocr` CLI and URL parameters to use it.
 
 
-### `minicpm-v` 
+### `minicpm-v`
 
 MiniCPM-V is an Apache based licensed OCR strategy.
 
@@ -190,7 +190,7 @@ Enabled by default. Please do use the `strategy=minicpm_v` CLI and URL parameter
 
 
 
-### `llama_vision` 
+### `llama_vision`
 
 LLama 3.2 Vision Strategy is licensed on [Meta Community License Agreement](https://ollama.com/library/llama3.2-vision/blobs/0b4284c1f870). Works great for many languages, although due to the number of parameters (90b) this model is probably **the slowest** one.
 
@@ -201,7 +201,7 @@ Enabled by default. Please do use the `strategy=llama_vision` CLI and URL parame
 
 Some OCR's - like [Marker, state of the art PDF OCR](https://github.com/VikParuchuri/marker) - works really great for more than 50 languages, including great accuracy for Polish and other languages - let's say that are "diffult" to read for standard OCR.
 
-The `marker-pdf` is however licensed on GPL3 license and **therefore it's not included** by default in this application (as we're bound to MIT). 
+The `marker-pdf` is however licensed on GPL3 license and **therefore it's not included** by default in this application (as we're bound to MIT).
 
 The weights for the models are licensed cc-by-nc-sa-4.0, but I will waive that for any organization under $5M USD in gross revenue in the most recent 12-month period AND under $5M in lifetime VC/angel funding raised. You also must not be competitive with the Datalab API. If you want to remove the GPL license requirements (dual-license) and/or use the weights commercially over the revenue limit, check out the options here.
 
@@ -234,7 +234,7 @@ make run
 Please do use the `strategy=remote` CLI and URL parameters to use it. For example:
 
 ```bash
-curl -X POST -H "Content-Type: multipart/form-data" -F "file=@examples/example-mri.pdf" -F "strategy=remote" -F "ocr_cache=true" -F "prompt=" -F "model=" "http://localhost:8000/ocr/upload" 
+curl -X POST -H "Content-Type: multipart/form-data" -F "file=@examples/example-mri.pdf" -F "strategy=remote" -F "ocr_cache=true" -F "prompt=" -F "model=" "http://localhost:8000/ocr/upload"
 ```
 
 We are connecting to remote OCR via it's API to not share the same license (GPL3) by having it all linked on the source code level.
@@ -266,7 +266,7 @@ Create `.env` file in the root directory and set the necessary environment varia
 cp .env.example .env
 ```
 
-or 
+or
 
 ```bash
 # defaults for local run
@@ -412,7 +412,7 @@ python client/cli.py result --task_id {your_task_id_from_upload_step}
 ### List file results archived by `storage_profile`
 
 ```bash
-python client/cli.py list_files 
+python client/cli.py list_files
 ```
 
 to use specific (in this case `google drive`) storage profile run:
@@ -436,7 +436,7 @@ python client/cli.py delete_file --file_name "invoices/2024/example-invoice-2024
 or for default profile (local file system):
 
 ```bash
-python client/cli.py delete_file --file_name "invoices/2024/example-invoice-2024-10-31-16-33.md" 
+python client/cli.py delete_file --file_name "invoices/2024/example-invoice-2024-10-31-16-33.md"
 ```
 
 ### Clear OCR Cache
@@ -498,7 +498,7 @@ apiClient.uploadFile(formData).then(response => {
 Example:
 
 ```bash
-curl -X POST -H "Content-Type: multipart/form-data" -F "file=@examples/example-mri.pdf" -F "strategy=easyocr" -F "ocr_cache=true" -F "prompt=" -F "model=" "http://localhost:8000/ocr/upload" 
+curl -X POST -H "Content-Type: multipart/form-data" -F "file=@examples/example-mri.pdf" -F "strategy=easyocr" -F "ocr_cache=true" -F "prompt=" -F "model=" "http://localhost:8000/ocr/upload"
 ```
 
 ### OCR Endpoint via JSON request
@@ -576,14 +576,14 @@ curl -X POST "http://localhost:8000/llm/generate" -H "Content-Type: application/
 ```
 
 ### List storage files:
- 
+
 - **URL:** /storage/list
 - **Method:** GET
 - **Parameters**:
   - **storage_profile**: Name of the storage profile to use for listing files (default: `default`).
 
 ### Download storage file:
- 
+
 - **URL:** /storage/load
 - **Method:** GET
 - **Parameters**:
@@ -591,7 +591,7 @@ curl -X POST "http://localhost:8000/llm/generate" -H "Content-Type: application/
   - **storage_profile**: Name of the storage profile to use for listing files (default: `default`).
 
 ### Delete storage file:
- 
+
 - **URL:** /storage/delete
 - **Method:** DELETE
 - **Parameters**:
@@ -641,10 +641,10 @@ settings:
 
 #### Requirements for AWS S3 Access Key
 
-1. **Access Key Ownership**  
+1. **Access Key Ownership**
    The access key must belong to an IAM user or role with permissions for S3 operations.
 
-2. **IAM Policy Example**  
+2. **IAM Policy Example**
    The IAM policy attached to the user or role must allow the necessary actions. Below is an example of a policy granting access to an S3 bucket:
    ```json
    {

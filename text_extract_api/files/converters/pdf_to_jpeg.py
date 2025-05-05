@@ -6,8 +6,8 @@ from text_extract_api.files.converters.converter import Converter
 from text_extract_api.files.file_formats.image import ImageFileFormat
 from text_extract_api.files.file_formats.pdf import PdfFileFormat
 
-class PdfToJpegConverter(Converter):
 
+class PdfToJpegConverter(Converter):
     @staticmethod
     def convert(file_format: PdfFileFormat) -> Iterator[Type["ImageFileFormat"]]:
         pages = convert_from_bytes(file_format.binary)
@@ -17,7 +17,7 @@ class PdfToJpegConverter(Converter):
             yield ImageFileFormat.from_binary(
                 binary=PdfToJpegConverter._image_to_bytes(page),
                 filename=f"{file_format.filename}_page_{i}.jpg",
-                mime_type="image/jpeg"
+                mime_type="image/jpeg",
             )
 
     @staticmethod

@@ -35,7 +35,9 @@ class DoclingFileFormat(FileFormat):
         return cls
 
     @staticmethod
-    def convertible_to() -> Dict[Type["FileFormat"], Callable[[], Iterator["FileFormat"]]]:
+    def convertible_to() -> Dict[
+        Type["FileFormat"], Callable[[], Iterator["FileFormat"]]
+    ]:
         # No specific converters needed as the strategy will handle conversion
         return {}
 

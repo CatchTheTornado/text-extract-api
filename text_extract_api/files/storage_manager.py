@@ -4,9 +4,12 @@ from enum import Enum
 import yaml
 
 from text_extract_api.files.storage_strategies.aws_s3 import AWSS3StorageStrategy
-from text_extract_api.files.storage_strategies.google_drive import GoogleDriveStorageStrategy
-from text_extract_api.files.storage_strategies.local_filesystem import LocalFilesystemStorageStrategy
-from text_extract_api.files.storage_strategies.storage_strategy import StorageStrategy
+from text_extract_api.files.storage_strategies.google_drive import (
+    GoogleDriveStorageStrategy,
+)
+from text_extract_api.files.storage_strategies.local_filesystem import (
+    LocalFilesystemStorageStrategy,
+)
 
 
 class StorageStrategy(Enum):
@@ -17,11 +20,14 @@ class StorageStrategy(Enum):
 
 class StorageManager:
     def __init__(self, profile_name):
-        profile_path = os.path.join(os.getenv('STORAGE_PROFILE_PATH', '/storage_profiles'), f'{profile_name}.yaml')
-        with open(profile_path, 'r') as file:
+        profile_path = os.path.join(
+            os.getenv("STORAGE_PROFILE_PATH", "/storage_profiles"),
+            f"{profile_name}.yaml",
+        )
+        with open(profile_path, "r") as file:
             self.profile = yaml.safe_load(file)
 
-        strategy = StorageStrategy(self.profile['strategy'])
+        strategy = StorageStrategy(self.profile["strategy"])
         if strategy == StorageStrategy.LOCAL_FILESYSTEM:
             self.strategy = LocalFilesystemStorageStrategy(self.profile)
         elif strategy == StorageStrategy.GOOGLE_DRIVE:

@@ -6,7 +6,7 @@ text_extract_api/__pycache__/*
 .dvenv
 .DS_Store
 storage/*
-client_secret*.json    
+client_secret*.json
 .env.localhost
 .idea
 # Python good practice ignore
