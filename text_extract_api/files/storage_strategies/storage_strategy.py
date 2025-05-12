@@ -3,7 +3,8 @@ from datetime import datetime
 from pathlib import Path
 from string import Template
 
-class StorageStrategy:
+
+class BaseStorageStrategy:
     def __init__(self, context):
         self.context = context
 
@@ -20,15 +21,17 @@ class StorageStrategy:
         raise NotImplementedError("Subclasses must implement this method")
 
     def format_file_name(self, file_name, format_string):
-        return format_string.format(file_fullname=file_name,  # file_name with path
-                                    file_name=Path(file_name).stem,  # file_name without path
-                                    file_extension=Path(file_name).suffix,  # file extension
-                                    Y=datetime.now().strftime('%Y'),
-                                    mm=datetime.now().strftime('%m'),
-                                    dd=datetime.now().strftime('%d'),
-                                    HH=datetime.now().strftime('%H'),
-                                    MM=datetime.now().strftime('%M'),
-                                    SS=datetime.now().strftime('%S'))
+        return format_string.format(
+            file_fullname=file_name,  # file_name with path
+            file_name=Path(file_name).stem,  # file_name without path
+            file_extension=Path(file_name).suffix,  # file extension
+            Y=datetime.now().strftime("%Y"),
+            mm=datetime.now().strftime("%m"),
+            dd=datetime.now().strftime("%d"),
+            HH=datetime.now().strftime("%H"),
+            MM=datetime.now().strftime("%M"),
+            SS=datetime.now().strftime("%S"),
+        )
 
     def resolve_placeholder(self, value, default=None):
         if not value:
@@ -39,4 +42,6 @@ class StorageStrategy:
             if default:
                 return default
             else:
-                raise ValueError(f"Environment variable '{e.args[0]}' is missing, and no default value is provided.")
+                raise ValueError(
+                    f"Environment variable '{e.args[0]}' is missing, and no default value is provided."
+                )

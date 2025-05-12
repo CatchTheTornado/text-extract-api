@@ -4,8 +4,8 @@ Invoice For   John Doe 2048 Michigan Str Adress Line 2 601 Chicago, US
 
 ## Subject
 
-From Acme Invoice Ltd Darrow Street 2 E1 7AW Portsoken London Invoice ID 
-INV/S/24/2024 17/09/2024 Issue Date PO Number 11/10/2024 Due Date 
+From Acme Invoice Ltd Darrow Street 2 E1 7AW Portsoken London Invoice ID
+INV/S/24/2024 17/09/2024 Issue Date PO Number 11/10/2024 Due Date
 
 | Amount                |            |        |       |
 |-----------------------|------------|--------|-------|
@@ -35,7 +35,7 @@ Invoice For   John Doe ANONYMIZED
 ## Subject
 
 From Acme Invoice Ltd Darrow Street 2 E1 7AW Portsoken London
-Invoice ID INV/S/24/2024 17/09/2024 Issue Date PO Number 11/10/2024 Due Date 
+Invoice ID INV/S/24/2024 17/09/2024 Issue Date PO Number 11/10/2024 Due Date
 
 | Amount                |            |        |       |
 |-----------------------|------------|--------|-------|

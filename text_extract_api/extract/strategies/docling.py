@@ -7,7 +7,8 @@ from docling_core.types.doc.document import (  # Assuming a compatible Docling l
 
 from text_extract_api.extract.extract_result import ExtractResult
 from text_extract_api.extract.strategies.strategy import Strategy
-from text_extract_api.files.file_formats import FileFormat, PdfFileFormat
+from text_extract_api.files.file_formats import FileFormat
+
 
 class DoclingStrategy(Strategy):
     """
