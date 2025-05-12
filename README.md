@@ -110,6 +110,20 @@ run.sh
 
 This command will install all the dependencies - including Redis (via Docker, so it is not entirely docker free method of running `text-extract-api` anyways :)
 
+
+Run pre-commit checks
+
+This command will run a pre-commit checks and, if possible, automatically format the code.
+The hooks used are available in the `pre-commit-config.yaml` file.
+
+Be sure to run this command after installing dependencies
+Including also those from the dev section
+
+```bash
+pre-commit run --all-files
+```
+
+
 (MAC) - Dependencies
 ```
 brew update && brew install libmagic poppler pkg-config ghostscript ffmpeg automake autoconf
