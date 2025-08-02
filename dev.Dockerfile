@@ -19,7 +19,6 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/* \
 WORKDIR /app
 
 # Copy all project files first
-COPY . .
 
 # Install Python dependencies
 RUN python -m venv .dvenv && \
