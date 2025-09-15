@@ -1,0 +1,85 @@
+version: '3.8'
+
+# Production Docker Compose using pre-built images from GitHub Container Registry
+# Usage: docker-compose -f docker-compose.prod.yml up
+
+services:
+  fastapi_app:
+    image: ghcr.io/catchthetornado/text-extract-api:latest
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_TYPE=fastapi
+      - CELERY_BROKER_URL=${CELERY_BROKER_URL-redis://redis:6379/0}
+      - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND-redis://redis:6379/0}
+      - LLM_PULL_API_URL=${LLM_PULL_API_URL-http://fastapi_app:8000/llm_pull}
+      - LLM_GENEREATE_API_URL=${LLM_GENEREATE_API_URL-http://fastapi_app:8000/llm_generate}
+      - OLLAMA_HOST=${OLLAMA_HOST-http://ollama:11434}
+      - APP_ENV=${APP_ENV-production}
+      - STORAGE_PROFILE_PATH=${STORAGE_PROFILE_PATH-/app/storage_profiles}
+      - LIST_FILES_URL=${LIST_FILES_URL-http://fastapi_app:8000/storage/list}
+      - LOAD_FILE_URL=${LOAD_FILE_URL-http://fastapi_app:8000/storage/load}
+      - DELETE_FILE_URL=${DELETE_FILE_URL-http://fastapi_app:8000/storage/delete}
+      - REMOTE_API_URL=${REMOTE_API_URL}
+      - REDIS_CACHE_URL=${REDIS_CACHE_URL-redis://redis:6379/1}
+    depends_on:
+      - redis
+      - ollama
+    volumes:
+      - ./storage:/storage
+      - ./storage_profiles:/app/storage_profiles
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  celery_worker:
+    image: ghcr.io/catchthetornado/text-extract-api:latest
+    environment:
+      - APP_TYPE=celery
+      - OLLAMA_HOST=${OLLAMA_HOST-http://ollama:11434}
+      - CELERY_BROKER_URL=${CELERY_BROKER_URL-redis://redis:6379/0}
+      - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND-redis://redis:6379/0}
+      - STORAGE_PROFILE_PATH=${STORAGE_PROFILE_PATH-/app/storage_profiles}
+      - LIST_FILES_URL=${LIST_FILES_URL-http://fastapi_app:8000/storage/list}      
+      - LOAD_FILE_URL=${LOAD_FILE_URL-http://fastapi_app:8000/storage/load}
+      - DELETE_FILE_URL=${DELETE_FILE_URL-http://fastapi_app:8000/storage/delete}
+      - REDIS_CACHE_URL=${REDIS_CACHE_URL-redis://redis:6379/1}
+    depends_on:
+      - redis
+      - fastapi_app
+    volumes:
+      - ./storage:/storage
+      - ./storage_profiles:/app/storage_profiles
+    restart: unless-stopped
+
+  redis:
+    image: redis:7.2.4-alpine
+    ports:
+      - "${REDIS_HOST_PORT:-6379}:6379"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  ollama:
+    image: ollama/ollama
+    pull_policy: always
+    tty: true
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  ollama_data:
