@@ -12,7 +12,7 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/* \
     && apt-get install -y \
         libglib2.0-0 \
         libglib2.0-dev \
-        libgl1-mesa-glx \
+        libgl1 \
         poppler-utils \
         libmagic1 \
         libmagic-dev \
