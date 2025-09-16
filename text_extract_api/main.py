@@ -33,6 +33,24 @@ app = FastAPI()
 redis_url = os.getenv('REDIS_CACHE_URL', 'redis://redis:6379/1')
 redis_client = redis.StrictRedis.from_url(redis_url)
 
+@app.get("/health")
+async def health_check():
+    """
+    Health check endpoint for container monitoring.
+    """
+    try:
+        # Check Redis connection
+        redis_client.ping()
+        redis_status = "healthy"
+    except Exception:
+        redis_status = "unhealthy"
+    
+    return {
+        "status": "healthy",
+        "redis": redis_status,
+        "timestamp": time.time()
+    }
+
 @app.post("/ocr")
 async def ocr_endpoint(
         strategy: str = Form(...),
