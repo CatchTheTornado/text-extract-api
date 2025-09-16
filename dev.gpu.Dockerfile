@@ -43,7 +43,7 @@ RUN echo 'Acquire::http::Pipeline-Depth 0;\nAcquire::http::No-Cache true;\nAcqui
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* \
     && apt-get update --fix-missing \
     && apt-get install -y \
-        libgl1-mesa-glx \
+        libgl1 \
         poppler-utils \
         libpoppler-cpp-dev \
     && rm -rf /var/lib/apt/lists/*
