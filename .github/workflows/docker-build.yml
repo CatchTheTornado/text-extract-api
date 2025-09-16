@@ -1,6 +1,17 @@
 name: Build and Push Docker Images
 
 on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Which images to build"
+        required: false
+        default: "both"
+        type: choice
+        options:
+          - cpu
+          - gpu
+          - both
   push:
     branches:
       - main
@@ -22,15 +33,21 @@ jobs:
       contents: read
       packages: write
 
+    env:
+      # When dispatched manually, inputs.target selects which images to build; otherwise build both
+      TARGET: ${{ github.event_name == 'workflow_dispatch' && inputs.target || 'both' }}
+
     strategy:
       matrix:
         include:
           - dockerfile: Dockerfile
             image-suffix: ""
             platforms: linux/amd64,linux/arm64
+            target: cpu
           - dockerfile: Dockerfile.gpu
             image-suffix: "-gpu"
             platforms: linux/amd64
+            target: gpu
 
     steps:
       - name: Checkout repository
@@ -40,6 +57,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Log in to Container Registry
+        if: (github.event_name != 'pull_request') && (env.TARGET == 'both' || env.TARGET == matrix.target)
         if: github.event_name != 'pull_request'
         uses: docker/login-action@v3
         with:
@@ -48,6 +66,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Extract metadata
+        if: env.TARGET == 'both' || env.TARGET == matrix.target
         id: meta
         uses: docker/metadata-action@v5
         with:
@@ -61,6 +80,7 @@ jobs:
             type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build and push Docker image
+        if: env.TARGET == 'both' || env.TARGET == matrix.target
         uses: docker/build-push-action@v5
         with:
           context: .
