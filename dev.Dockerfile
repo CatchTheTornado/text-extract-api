@@ -18,6 +18,14 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/* \
 
 WORKDIR /app
 
+# Copy all project files first
+
+# Install Python dependencies
+RUN python -m venv .dvenv && \
+    . .dvenv/bin/activate && \
+    pip install --upgrade pip setuptools && \
+    pip install .
+
 EXPOSE 8000
 
 ENTRYPOINT ["/app/scripts/entrypoint.sh"]
