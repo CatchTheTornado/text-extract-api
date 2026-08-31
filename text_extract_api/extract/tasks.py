@@ -28,9 +28,14 @@ def ocr_task(
         language: Optional[str] = None,
         storage_profile: Optional[str] = None,
         storage_filename: Optional[str] = None,
+        verify_document: bool = False,
+        document_path: Optional[str] = None,
 ):
     """
     Celery task to perform OCR processing on a PDF/Office/image file.
+    When verify_document is True, the original file (document_path) is also
+    inspected for authenticity via the Stipple API (free tier) and the
+    warrant is attached to the result under document_verification.
     """
     start_time = time.time()
 
@@ -90,7 +95,17 @@ def ocr_task(
         storage_manager = StorageManager(storage_profile)
         storage_manager.save(filename, storage_filename, extracted_text)
 
+    document_verification = None
+    if verify_document and document_path:
+        try:
+            from text_extract_api.extract.stipple_verification import verification_block
+            document_verification = verification_block(document_path, enabled=True)
+        except Exception as e:  # noqa: BLE001 - verification must never break extraction
+            print(f"Stipple verification failed (non-fatal): {e}")
+
     self.update_state(state='DONE', meta={'progress': 100, 'status': 'Processing done!', 'start_time': start_time,
                                           'elapsed_time': time.time() - start_time})
 
+    if document_verification is not None:
+        return {"extracted_text": extracted_text, "document_verification": document_verification}
     return extracted_text

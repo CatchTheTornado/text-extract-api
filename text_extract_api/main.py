@@ -99,6 +99,7 @@ class OllamaPullRequest(BaseModel):
 
 
 class OcrRequest(BaseModel):
+    verify: bool = Field(default=False, description="Inspect the source document for authenticity (Stipple, free tier) and include document_verification in the result")
     strategy: str = Field(..., description="OCR strategy to use")
     prompt: Optional[str] = Field(None, description="Prompt for the Ollama model")
     model: Optional[str] = Field(None, description="Model to use for the Ollama endpoint")
@@ -158,10 +159,25 @@ async def ocr_request_endpoint(request: OcrRequest):
     print(
         f"Processing {file.mime_type} with strategy: {request.strategy}, ocr_cache: {request.ocr_cache}, model: {request.model}, storage_profile: {request.storage_profile}, storage_filename: {request.storage_filename}, language: {request.language}")
 
+    # Optional document-authenticity verification: stage the original file so
+    # the verification step can inspect it after extraction completes.
+    document_path = None
+    if request.verify:
+        try:
+            import tempfile
+            suffix = os.path.splitext(request.storage_filename or file.filename)[1] or '.pdf'
+            tmp = tempfile.NamedTemporaryFile(delete=False, suffix=suffix)
+            tmp.write(file.binary)
+            tmp.close()
+            document_path = tmp.name
+        except Exception as e:
+            print(f"Staging for verification failed (non-fatal): {e}")
+
     # Asynchronous processing using Celery
     task = ocr_task.apply_async(
         args=[file.binary, request.strategy, file.filename, file.hash, request.ocr_cache, request.prompt,
-              request.model, request.language, request.storage_profile, request.storage_filename])
+              request.model, request.language, request.storage_profile, request.storage_filename,
+              request.verify, document_path])
     return {"task_id": task.id}
 
 
